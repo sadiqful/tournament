@@ -1,6 +1,6 @@
 Tournament Management System.
 
-A comprehensive NestJS backend for managing tournament registrations, teams, players, matches, and payments.
+A comprehensive NestJS backend for managing football tournament. This includes registrations, teams, players, matches and payments.
 
 ### **Core Features:**
 - **Team Registration** with player management (up to 15 players per team)
@@ -9,14 +9,7 @@ A comprehensive NestJS backend for managing tournament registrations, teams, pla
 - **Admin Dashboard** with full control over all entities
 - **File Uploads** for team logos and player photos
 - **Email Notifications** for confirmations and approvals
-
-### **Advanced Features:**
-- **File upload handling** with validation and storage
-- **Email service** with HTML templates for notifications
-- **Payment webhooks** for real-time payment status updates
 - **League table generation** with points calculation
-- **Comprehensive validation** using class-validator
-- **Global error handling** and response transformation
 - **Rate limiting** and security measures
 
 ## 🚀 **Quick Start:**
