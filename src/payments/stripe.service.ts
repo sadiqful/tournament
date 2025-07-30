@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 
@@ -7,12 +7,14 @@ export class StripeService {
   private stripe: Stripe;
 
   constructor(private configService: ConfigService) {
-    this.stripe = new Stripe(
-      this.configService.get<string>('STRIPE_SECRET_KEY'),
-      {
-        apiVersion: '2023-10-16',
-      }
-    );
+    const secretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
+    if (!secretKey) {
+      throw new InternalServerErrorException('STRIPE_SECRET_KEY is not defined in the environment variables');
+    }
+
+    this.stripe = new Stripe(secretKey, {
+      apiVersion: '2023-10-16',
+    });
   }
 
   async createPaymentIntent(params: {
@@ -32,6 +34,10 @@ export class StripeService {
 
   constructEvent(payload: Buffer, signature: string): Stripe.Event {
     const webhookSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET');
+    if (!webhookSecret) {
+      throw new InternalServerErrorException('STRIPE_WEBHOOK_SECRET is not defined in the environment variables');
+    }
+
     return this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
   }
 

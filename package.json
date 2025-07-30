@@ -6,6 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "seed": "ts-node src/database/seeder/seed.ts",
+    "db:setup": "chmod +x scripts/setup-db.sh && ./scripts/setup-db.sh",
+    "db:reset": "chmod +x scripts/reset-db.sh && ./scripts/reset-db.sh",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

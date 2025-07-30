@@ -5,23 +5,31 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import * as fs from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    rawBody: true, 
+    rawBody: true,
   });
 
   const configService = app.get(ConfigService);
 
   app.setGlobalPrefix('api/v1');
 
+  const frontendUrl = configService.get<string>('FRONTEND_URL');
+
+  const origins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ];
+
+  if (frontendUrl) {
+    origins.unshift(frontendUrl);
+  }
+
   // Enable CORS
   app.enableCors({
-    origin: [
-      configService.get('FRONTEND_URL'),
-      'http://localhost:3000',
-      'http://localhost:3001',
-    ],
+    origin: origins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'stripe-signature'],
@@ -39,10 +47,11 @@ async function bootstrap() {
     }),
   );
 
+  // Global filters and interceptors
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  // Swagger documentation
+  // Swagger documentation setup
   const config = new DocumentBuilder()
     .setTitle('Tournament Management System API')
     .setDescription('API for managing tournament teams, players, matches, and payments')
@@ -63,14 +72,13 @@ async function bootstrap() {
     },
   });
 
-  // Create uploads directory if it doesn't exist
-  const fs = require('fs');
+  // Ensure uploads directory exists
   const uploadDir = './uploads';
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
   }
 
-  const port = configService.get('PORT') || 3000;
+  const port = configService.get<number>('PORT') || 3000;
   await app.listen(port);
 
   console.log(`🚀 Tournament API is running on: http://localhost:${port}`);

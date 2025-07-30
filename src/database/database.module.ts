@@ -18,8 +18,12 @@ import { Payment } from '../entities/payment.entity';
         username: configService.get('DATABASE_USERNAME'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
+        ssl: {
+          rejectUnauthorized: false,
+        },
+        autoLoadEntities: true,
+        synchronize: true,
         entities: [Admin, Team, Player, Match, Payment],
-        synchronize: configService.get('NODE_ENV') === 'development',
         logging: configService.get('NODE_ENV') === 'development',
       }),
       inject: [ConfigService],
